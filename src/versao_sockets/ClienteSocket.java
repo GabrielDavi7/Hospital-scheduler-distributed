@@ -1,4 +1,5 @@
-//Esse arquivo serve para inserir os dados no servidor
+//Esse arquivo serve para inserir os dados no servidor digitando no terminal, 
+//ele se conecta ao servidor via Sockets, envia os dados do agendamento e recebe a resposta do servidor.
 
 package versao_sockets;
 

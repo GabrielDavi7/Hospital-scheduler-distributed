@@ -26,7 +26,7 @@ public class ServidorSocket {
         int porta = 5000;
 
         try (ServerSocket servidor = new ServerSocket(porta)) {
-            System.out.println("🏥 Servidor Hospitalar (Sockets) rodando na porta " + porta);
+            System.out.println("Servidor Hospitalar (Sockets) rodando na porta " + porta);
 
             while (true) {
                 Socket cliente = servidor.accept();
@@ -69,6 +69,45 @@ public class ServidorSocket {
                             saida.println(lista.toString());
                         }
                         System.out.println("Enviando agenda completa para a recepção.");
+                    }
+                    // BUSCA POR CPF DO PACIENTE
+                    // BUSCA POR CPF DO PACIENTE
+                    else if (mensagemCliente.startsWith("BUSCAR_CPF;")) {
+                        String cpfBusca = mensagemCliente.split(";")[1];
+                        StringBuilder lista = new StringBuilder();
+                        
+                        for (Consulta c : agendamentos) {
+                            // É ESTA LINHA QUE FILTRA OS DADOS CORRETOS:
+                            if (c.getCpfPaciente().equals(cpfBusca)) {
+                                lista.append(c.toString()).append(" @ ");
+                            }
+                        }
+                        
+                        if (lista.length() == 0) {
+                            saida.println("Nenhuma consulta encontrada para o CPF: " + cpfBusca);
+                        } else {
+                            saida.println(lista.toString());
+                        }
+                        System.out.println("Recepção buscou histórico do CPF: " + cpfBusca);
+                    }
+                    // BUSCA POR CRM DO MÉDICO
+                    else if (mensagemCliente.startsWith("BUSCAR_CRM;")) {
+                        String crmBusca = mensagemCliente.split(";")[1];
+                        StringBuilder lista = new StringBuilder();
+                        
+                        for (Consulta c : agendamentos) {
+                            // É ESTA LINHA QUE FILTRA OS DADOS PELO CRM:
+                            if (c.getCrmMedico().equals(crmBusca)) {
+                                lista.append(c.toString()).append(" @ ");
+                            }
+                        }
+                        
+                        if (lista.length() == 0) {
+                            saida.println("Nenhuma consulta encontrada para o CRM: " + crmBusca);
+                        } else {
+                            saida.println(lista.toString());
+                        }
+                        System.out.println("Recepção buscou agenda do CRM: " + crmBusca);
                     }
                     
                     else {
