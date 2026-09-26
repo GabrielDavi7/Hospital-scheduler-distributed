@@ -21,7 +21,7 @@ A entidade central do sistema é o objeto `Consulta`. As funcionalidades incluem
 
 ## 📊 Testes de Estresse e Desempenho
 
-O projeto acompanha scripts `Povoar.java` que injetam **1000 registros simultâneos** no servidor para cada arquitetura. As métricas avaliadas incluem:
+O projeto acompanha scripts `Povoar.java` que injetam **10.000 registros simultâneos** no servidor para cada arquitetura. As métricas avaliadas incluem:
 
 - Tempo de execução total (em milissegundos) para inserção em lote.
 - Tempo de resposta do servidor na filtragem de consultas por CPF/CRM.
