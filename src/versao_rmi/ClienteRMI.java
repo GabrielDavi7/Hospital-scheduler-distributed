@@ -10,9 +10,7 @@ import modelo.Consulta;
 public class ClienteRMI {
     public static void main(String[] args) {
         try {
-            // Conecta ao registro RMI na porta 1099
             Registry registry = LocateRegistry.getRegistry("127.0.0.1", 1099);
-            // Busca o serviço pelo nome que registramos no servidor
             InterfaceRMI servidor = (InterfaceRMI) registry.lookup("HospitalService");
             
             Scanner teclado = new Scanner(System.in);
@@ -40,11 +38,16 @@ public class ClienteRMI {
             System.out.print("Data e Hora (Ex: 25/10/2026 14:30): ");
             String data = teclado.nextLine();
             
-            // Instanciamos o objeto Consulta e enviamos ele inteiro pela rede
             Consulta novaConsulta = new Consulta(nome, cpf, telefone, especialidade, medico, crm, data);
+            
+            long tempoInicio = System.currentTimeMillis();
+            
             String resposta = servidor.agendarConsulta(novaConsulta);
             
+            long tempoTotal = System.currentTimeMillis() - tempoInicio;
+            
             System.out.println("\nRESPOSTA DO SERVIDOR: " + resposta);
+            System.out.println("📊 Tempo de resposta do servidor RMI: " + tempoTotal + " ms.");
             teclado.close();
             
         } catch (Exception e) {

@@ -18,7 +18,7 @@ public class ClienteSocket {
 
         try {
             System.out.println("--- BEM-VINDO AO HOSPITAL DISTRIBUÍDO ---");
-            
+        
             Socket socketLista = new Socket(ipServidor, porta);
             PrintWriter saidaLista = new PrintWriter(socketLista.getOutputStream(), true);
             BufferedReader entradaLista = new BufferedReader(new InputStreamReader(socketLista.getInputStream()));
@@ -61,10 +61,16 @@ public class ClienteSocket {
             PrintWriter saidaAgendamento = new PrintWriter(socketAgendamento.getOutputStream(), true);
             BufferedReader entradaAgendamento = new BufferedReader(new InputStreamReader(socketAgendamento.getInputStream()));
             
+            long tempoInicio = System.currentTimeMillis();
+            
             saidaAgendamento.println(comandoAgendar);
             String respostaAgendamento = entradaAgendamento.readLine();
             
+            long tempoTotal = System.currentTimeMillis() - tempoInicio;
+            
             System.out.println("\nRESPOSTA DO SERVIDOR: " + respostaAgendamento);
+            System.out.println("📊 Tempo de resposta do servidor: " + tempoTotal + " ms.");
+            
             socketAgendamento.close();
 
         } catch (Exception e) {

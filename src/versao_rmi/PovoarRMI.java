@@ -9,7 +9,7 @@ import modelo.Consulta;
 
 public class PovoarRMI {
     public static void main(String[] args) {
-        int quantidadeTestes = 1000; 
+        int quantidadeTestes = 10000; 
         System.out.println("⏳ Iniciando povoamento automático via RMI (" + quantidadeTestes + " agendamentos)...");
         
         String[] cpfs = {"111.111.111-11", "222.222.222-22", "333.333.333-33", "444.444.444-44", "555.555.555-55"};
