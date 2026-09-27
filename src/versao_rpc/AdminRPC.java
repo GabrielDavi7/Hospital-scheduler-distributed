@@ -2,6 +2,7 @@ package versao_rpc;
 
 import java.util.Map;
 import java.util.Scanner;
+import modelo.Consulta;
 
 public class AdminRPC {
     public static void main(String[] args) {
@@ -38,7 +39,16 @@ public class AdminRPC {
                 System.out.println("Nenhuma consulta encontrada.");
             }
             for (Object resultado : resultados) {
-                System.out.println(DadosRPC.paraConsulta((Map<?, ?>) resultado));
+                Map<?, ?> dados = (Map<?, ?>) resultado;
+                Consulta consulta = new Consulta(
+                        campo(dados, "nomePaciente"), campo(dados, "cpfPaciente"),
+                        campo(dados, "telefonePaciente"), campo(dados, "especialidade"),
+                        campo(dados, "nomeMedico"), campo(dados, "crmMedico"),
+                        campo(dados, "dataHora"));
+                if (dados.get("id") instanceof String) {
+                    consulta.setId((String) dados.get("id"));
+                }
+                System.out.println(consulta);
                 System.out.println("--------------------------------------------------");
             }
             System.out.println("Consultas encontradas: " + resultados.length);
@@ -47,5 +57,13 @@ public class AdminRPC {
             System.err.println("Erro no Painel RPC: " + e.getMessage());
             System.exit(1);
         }
+    }
+
+    private static String campo(Map<?, ?> dados, String nome) {
+        Object valor = dados.get(nome);
+        if (!(valor instanceof String) || ((String) valor).trim().isEmpty()) {
+            throw new IllegalArgumentException("Campo obrigatorio: " + nome);
+        }
+        return (String) valor;
     }
 }

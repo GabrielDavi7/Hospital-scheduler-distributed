@@ -1,6 +1,7 @@
 package versao_rpc;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import modelo.Consulta;
@@ -21,7 +22,14 @@ public class ServidorRPC implements InterfaceRPC {
 
     @Override
     public synchronized String agendarConsulta(Map<String, String> dados) {
-        Consulta consulta = DadosRPC.paraConsulta(dados);
+        if (dados == null) {
+            throw new IllegalArgumentException("Consulta obrigatoria.");
+        }
+        Consulta consulta = new Consulta(
+                campo(dados, "nomePaciente"), campo(dados, "cpfPaciente"),
+                campo(dados, "telefonePaciente"), campo(dados, "especialidade"),
+                campo(dados, "nomeMedico"), campo(dados, "crmMedico"),
+                campo(dados, "dataHora"));
         consulta.setId("AG-RPC-" + contadorId++);
         agendamentos.add(consulta);
         return "SUCESSO;Consulta agendada com ID: " + consulta.getId();
@@ -29,19 +37,40 @@ public class ServidorRPC implements InterfaceRPC {
 
     @Override
     public synchronized Object[] verAgendamentos() {
-        return agendamentos.stream().map(DadosRPC::paraMapa).toArray();
+        return agendamentos.stream().map(this::paraMapa).toArray();
     }
 
     @Override
     public synchronized Object[] buscarPorCpf(String cpf) {
         return agendamentos.stream().filter(c -> c.getCpfPaciente().equals(cpf))
-                .map(DadosRPC::paraMapa).toArray();
+                .map(this::paraMapa).toArray();
     }
 
     @Override
     public synchronized Object[] buscarPorCrm(String crm) {
         return agendamentos.stream().filter(c -> c.getCrmMedico().equals(crm))
-                .map(DadosRPC::paraMapa).toArray();
+                .map(this::paraMapa).toArray();
+    }
+
+    private Map<String, String> paraMapa(Consulta consulta) {
+        Map<String, String> dados = new LinkedHashMap<>();
+        dados.put("id", consulta.getId());
+        dados.put("nomePaciente", consulta.getNomePaciente());
+        dados.put("cpfPaciente", consulta.getCpfPaciente());
+        dados.put("telefonePaciente", consulta.getTelefonePaciente());
+        dados.put("especialidade", consulta.getEspecialidade());
+        dados.put("nomeMedico", consulta.getNomeMedico());
+        dados.put("crmMedico", consulta.getCrmMedico());
+        dados.put("dataHora", consulta.getDataHora());
+        return dados;
+    }
+
+    private static String campo(Map<?, ?> dados, String nome) {
+        Object valor = dados.get(nome);
+        if (!(valor instanceof String) || ((String) valor).trim().isEmpty()) {
+            throw new IllegalArgumentException("Campo obrigatorio: " + nome);
+        }
+        return (String) valor;
     }
 
     public static void main(String[] args) {

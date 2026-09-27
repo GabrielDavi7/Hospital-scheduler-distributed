@@ -1,5 +1,7 @@
 package versao_rpc;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 import modelo.Consulta;
 
@@ -25,7 +27,16 @@ public class PovoarRPC {
                 String data = dias[gerador.nextInt(dias.length)] + " " + horas[gerador.nextInt(horas.length)];
                 Consulta consulta = new Consulta("Paciente Teste " + i, cpf, "38900000000",
                         especialidades[indexMedico], medicos[indexMedico], crms[indexMedico], data);
-                String resposta = servidor.agendarConsulta(DadosRPC.paraMapa(consulta));
+                Map<String, String> dados = new LinkedHashMap<>();
+                dados.put("id", consulta.getId());
+                dados.put("nomePaciente", consulta.getNomePaciente());
+                dados.put("cpfPaciente", consulta.getCpfPaciente());
+                dados.put("telefonePaciente", consulta.getTelefonePaciente());
+                dados.put("especialidade", consulta.getEspecialidade());
+                dados.put("nomeMedico", consulta.getNomeMedico());
+                dados.put("crmMedico", consulta.getCrmMedico());
+                dados.put("dataHora", consulta.getDataHora());
+                String resposta = servidor.agendarConsulta(dados);
                 if (!resposta.startsWith("SUCESSO;")) {
                     throw new IllegalStateException("Agendamento recusado: " + resposta);
                 }

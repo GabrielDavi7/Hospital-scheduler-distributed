@@ -1,5 +1,7 @@
 package versao_rpc;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
 import modelo.Consulta;
 
@@ -21,8 +23,22 @@ public class ClienteRPC {
             String crm = ler(teclado, "CRM do Médico: ");
             String data = ler(teclado, "Data e Hora (Ex: 25/10/2026 14:30): ");
             Consulta consulta = new Consulta(nome, cpf, telefone, especialidade, medico, crm, data);
-            System.out.println("\nRESPOSTA DO SERVIDOR: "
-                    + servidor.agendarConsulta(DadosRPC.paraMapa(consulta)));
+            Map<String, String> dados = new LinkedHashMap<>();
+            dados.put("id", consulta.getId());
+            dados.put("nomePaciente", consulta.getNomePaciente());
+            dados.put("cpfPaciente", consulta.getCpfPaciente());
+            dados.put("telefonePaciente", consulta.getTelefonePaciente());
+            dados.put("especialidade", consulta.getEspecialidade());
+            dados.put("nomeMedico", consulta.getNomeMedico());
+            dados.put("crmMedico", consulta.getCrmMedico());
+            dados.put("dataHora", consulta.getDataHora());
+            // Mede somente a chamada de agendamento e o recebimento da resposta.
+            long inicio = System.nanoTime();
+            String resposta = servidor.agendarConsulta(dados);
+            double tempoMs = (System.nanoTime() - inicio) / 1_000_000.0;
+
+            System.out.println("\nRESPOSTA DO SERVIDOR: " + resposta);
+            System.out.printf("Tempo de resposta RPC do agendamento: %.3f ms.%n", tempoMs);
         } catch (Exception e) {
             System.err.println("Erro no Cliente RPC: " + e.getMessage());
             System.exit(1);
