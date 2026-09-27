@@ -14,7 +14,7 @@ public class PovoarSockets {
     public static void main(String[] args) {
         String ipServidor = "127.0.0.1";
         int porta = 5000;
-        int quantidadeTestes = 1000; 
+        int quantidadeTestes = 10000; 
 
         System.out.println("⏳ Iniciando o povoamento automático com dados variados (" + quantidadeTestes + " agendamentos)...");
         
