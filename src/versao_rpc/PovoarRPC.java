@@ -7,7 +7,7 @@ import modelo.Consulta;
 
 public class PovoarRPC {
     public static void main(String[] args) {
-        int quantidadeTestes = 1000;
+        int quantidadeTestes = 10000;
         int confirmados = 0;
         String[] cpfs = {"111.111.111-11", "222.222.222-22", "333.333.333-33", "444.444.444-44", "555.555.555-55"};
         String[] especialidades = {"Cardiologia", "Ortopedia", "Pediatria"};
@@ -19,7 +19,7 @@ public class PovoarRPC {
         try {
             InterfaceRPC servidor = ConexaoRPC.conectar(args);
             Random gerador = new Random();
-            System.out.println("Iniciando povoamento RPC (1000 agendamentos sequenciais)...");
+            System.out.println("Iniciando povoamento RPC (10000 agendamentos sequenciais)...");
             long inicio = System.nanoTime();
             for (int i = 1; i <= quantidadeTestes; i++) {
                 String cpf = cpfs[gerador.nextInt(cpfs.length)];
