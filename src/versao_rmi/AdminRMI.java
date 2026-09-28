@@ -1,5 +1,3 @@
-//Painel de administração RMI, mesmo objetivo do painel de administração via socket filtra uma lista de agendamentos cadastrados no servidor RMI e exibe no terminal.
-
 package versao_rmi;
 
 import java.rmi.registry.LocateRegistry;
@@ -11,7 +9,9 @@ import modelo.Consulta;
 public class AdminRMI {
     public static void main(String[] args) {
         try {
-            Registry registry = LocateRegistry.getRegistry("127.0.0.1", 1099);
+            String host = args.length > 0 ? args[0] : "127.0.0.1";
+            int porta = args.length > 1 ? Integer.parseInt(args[1]) : 1099;
+            Registry registry = LocateRegistry.getRegistry(host, porta);
             InterfaceRMI servidor = (InterfaceRMI) registry.lookup("HospitalService");
             Scanner teclado = new Scanner(System.in);
 
@@ -22,21 +22,31 @@ public class AdminRMI {
             System.out.print("Escolha uma opção: ");
             String opcao = teclado.nextLine();
 
-            long tempoInicio = System.currentTimeMillis();
-            List<Consulta> resultados = null;
-
-            if (opcao.equals("1")) {
-                resultados = servidor.verAgendamentos();
-            } else if (opcao.equals("2")) {
+            String filtro = "";
+            if (opcao.equals("2")) {
                 System.out.print("Digite o CPF (ex: 111.111.111-11): ");
-                String cpf = teclado.nextLine();
-                resultados = servidor.buscarPorCpf(cpf);
+                filtro = teclado.nextLine();
             } else if (opcao.equals("3")) {
                 System.out.print("Digite o CRM (ex: 99999): ");
-                String crm = teclado.nextLine();
-                resultados = servidor.buscarPorCrm(crm);
+                filtro = teclado.nextLine();
+            } else if (!opcao.equals("1")) {
+                System.out.println("Opção inválida.");
+                teclado.close();
+                return;
             }
 
+            long tempoInicio = System.nanoTime();
+            List<Consulta> resultados;
+            if (opcao.equals("2")) {
+                resultados = servidor.buscarPorCpf(filtro);
+            } else if (opcao.equals("3")) {
+                resultados = servidor.buscarPorCrm(filtro);
+            } else {
+                resultados = servidor.verAgendamentos();
+            }
+            double tempoChamadaMs = (System.nanoTime() - tempoInicio) / 1_000_000.0;
+
+            long inicioImpressao = System.nanoTime();
             System.out.println("\n--- RESULTADO DA BUSCA ---");
             if (resultados == null || resultados.isEmpty()) {
                 System.out.println("Nenhuma consulta encontrada.");
@@ -47,8 +57,11 @@ public class AdminRMI {
                 }
             }
 
-            long tempoTotal = System.currentTimeMillis() - tempoInicio;
-            System.out.println("Tempo de resposta RMI: " + tempoTotal + " ms.");
+            double tempoImpressaoMs = (System.nanoTime() - inicioImpressao) / 1_000_000.0;
+            System.out.println("Consultas retornadas: " + (resultados == null ? 0 : resultados.size()));
+            System.out.printf("Tempo total da chamada RMI (cliente): %.3f ms.%n", tempoChamadaMs);
+            System.out.printf("Tempo de impressao dos resultados (cliente): %.3f ms.%n", tempoImpressaoMs);
+            System.out.println("Tempo de processamento da busca: consulte o terminal do servidor.");
             teclado.close();
 
         } catch (Exception e) {

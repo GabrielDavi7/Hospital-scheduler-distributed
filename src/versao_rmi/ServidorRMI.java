@@ -1,6 +1,3 @@
-// Arquivo que implementa as regras da interface. Mantém a lista de agendamentos na memória, 
-// processando os objetos Consulta que chegam prontos e devolvendo listas reais para as requisições.
-
 package versao_rmi;
 
 import java.rmi.RemoteException;
@@ -41,31 +38,41 @@ public class ServidorRMI extends UnicastRemoteObject implements InterfaceRMI {
 
     @Override
     public List<Consulta> verAgendamentos() throws RemoteException {
-        System.out.println("Recepção solicitou a agenda completa.");
-        return agendamentos; // Retorna a lista direto pela rede!
+        long inicio = System.nanoTime();
+        List<Consulta> resultado = new ArrayList<>(agendamentos);
+        long tempoBuscaNs = System.nanoTime() - inicio;
+        System.out.printf("[RMI servidor] Agenda completa | registros: %d | retornados: %d | processamento: %.3f ms.%n",
+                agendamentos.size(), resultado.size(), tempoBuscaNs / 1_000_000.0);
+        return resultado;
     }
 
     @Override
     public List<Consulta> buscarPorCpf(String cpf) throws RemoteException {
-        System.out.println("Recepção buscou CPF: " + cpf);
+        long inicio = System.nanoTime();
         List<Consulta> resultado = new ArrayList<>();
         for (Consulta c : agendamentos) {
             if (c.getCpfPaciente().equals(cpf)) {
                 resultado.add(c);
             }
         }
+        long tempoBuscaNs = System.nanoTime() - inicio;
+        System.out.printf("[RMI servidor] CPF: %s | registros: %d | retornados: %d | processamento: %.3f ms.%n",
+                cpf, agendamentos.size(), resultado.size(), tempoBuscaNs / 1_000_000.0);
         return resultado;
     }
 
     @Override
     public List<Consulta> buscarPorCrm(String crm) throws RemoteException {
-        System.out.println("Recepção buscou CRM: " + crm);
+        long inicio = System.nanoTime();
         List<Consulta> resultado = new ArrayList<>();
         for (Consulta c : agendamentos) {
             if (c.getCrmMedico().equals(crm)) {
                 resultado.add(c);
             }
         }
+        long tempoBuscaNs = System.nanoTime() - inicio;
+        System.out.printf("[RMI servidor] CRM: %s | registros: %d | retornados: %d | processamento: %.3f ms.%n",
+                crm, agendamentos.size(), resultado.size(), tempoBuscaNs / 1_000_000.0);
         return resultado;
     }
 
